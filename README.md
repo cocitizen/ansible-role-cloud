@@ -17,7 +17,7 @@ This module seeks to improve on this by building a dynamic inventory, and mappin
 Role Variables
 --------------
 
-See [defaults/main.yml](blob/master/defaults/main.yml) for a full breakdown of the available variables.
+See [defaults/main.yml](defaults/main.yml) for a full breakdown of the available variables.
 
 
 Dependencies
