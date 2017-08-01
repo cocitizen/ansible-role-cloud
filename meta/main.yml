@@ -1,0 +1,22 @@
+---
+
+galaxy_info:
+  author: Christopher Gervais (ergonlogic)
+  description: Cloud - Provision and manage cloud resources.
+  company: "CoCitizen LLC"
+  license: "GPLv3 or later"
+  min_ansible_version: 2.3
+  platforms:
+  - name: Debian
+    versions:
+    - all
+  - name: Ubuntu
+    versions:
+    - all
+  galaxy_tags:
+    - amazon
+    - aws
+    - cloud
+
+dependencies: []
+

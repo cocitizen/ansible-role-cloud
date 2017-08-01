@@ -1,0 +1,9 @@
+---
+
+- name: "Set indexes for {{ cloud_provider_name }} {{ cloud_fact_type }}."
+  set_fact:
+    cloud_facts: "{{ cloud_facts | default({}) | combine( { cloud_provider_name: { cloud_fact_type: { item.0: item.1 } } }, recursive=True ) }}"
+  with_indexed_items: "{{ cloud_lookup_facts }}"
+  loop_control:
+    label: "{{ item.0 }}"
+

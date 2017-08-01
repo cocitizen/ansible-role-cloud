@@ -1,0 +1,18 @@
+---
+
+- name: "Set defaults for {{ cloud_provider_name }} {{ cloud_definition_type }} definitions."
+  set_fact:
+    cloud_definitions: "{{ cloud_definitions | default({}) | combine( { cloud_definition_type: { cloud_provider_name: { item.key: cloud_definition_defaults[cloud_provider_name] } } }, recursive=True ) | combine( { cloud_definition_type: { cloud_provider_name: { item.key: item.value }}}, recursive=True) }}"
+  with_dict: "{{ cloud_provider_definitions }}"
+  loop_control:
+    label: "{{ item.key }}"
+  when: cloud_provider_name in cloud_definition_defaults
+
+- name: "Apply overrides to {{ cloud_provider_name }} {{ cloud_definition_type }} definitions."
+  set_fact:
+    cloud_definitions: "{{ cloud_definitions | default({}) | combine( { cloud_definition_type: { cloud_provider_name: { item.key: cloud_definition_overrides[cloud_provider_name][item.key] } } }, recursive=True ) }}"
+  with_dict: "{{ cloud_provider_definitions }}"
+  loop_control:
+    label: "{{ item.key }}"
+  when: cloud_provider_name in cloud_definition_overrides and item.key in cloud_definition_overrides[cloud_provider_name]
+

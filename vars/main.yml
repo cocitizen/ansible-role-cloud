@@ -1,0 +1,35 @@
+---
+
+cloud_fact_definitions:
+  amazon:
+    instances:
+      module: ec2_remote_facts
+    internet_gateways:
+      module: ec2_vpc_igw_facts
+      # NOTE: Ansible's "ec2_vpc_igw" module doesn't currently allow setting
+      # either a name or tags. As a result, we cannot use names as keys, as we do
+      # with other resources. Instead, we just use an index, which is the best we
+      # can do at the moment.
+      # TODO: Check http://docs.ansible.com/ansible/ec2_vpc_igw_module.html, to
+      # see if we can set a name or tags yet. Once we can, use the default
+      # 'tag' name key.
+      # TODO: Alternatively, set the 'Name' tag directly using the AWS API. When
+      # creating the resource.
+      name_key:
+        type: index
+        arg: ~
+    security_groups:
+      module: ec2_group_facts
+      name_key:
+        type: property
+        arg: group_name
+    subnets:
+      module: ec2_vpc_subnet_facts
+    vpcs:
+      module: ec2_vpc_net_facts
+
+cloud_resource_definitions:
+  amazon:
+    vpcs:
+      module: 'ec2_vpc_net'
+

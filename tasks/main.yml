@@ -1,0 +1,59 @@
+---
+
+- name: Apply defaults and overrides to cloud fact definitions
+  include: definitions.yml
+  vars:
+    cloud_definition_type: fact
+    cloud_definition_defaults: "{{ cloud_fact_definition_defaults }}"
+    cloud_definition_overrides: "{{ cloud_fact_definition_overrides }}"
+    cloud_provider_name: "{{ cloud_provider.key }}"
+    cloud_provider_definitions: "{{ cloud_provider.value }}"
+  with_dict: "{{ cloud_fact_definitions }}"
+  loop_control:
+    loop_var: cloud_provider
+
+- name: Apply defaults and overrides to cloud resource definitions
+  include: definitions.yml
+  vars:
+    cloud_definition_type: resource
+    cloud_definition_defaults: "{{ cloud_resource_definition_defaults }}"
+    cloud_definition_overrides: "{{ cloud_resource_definition_overrides }}"
+    cloud_provider_name: "{{ cloud_provider.key }}"
+    cloud_provider_definitions: "{{ cloud_provider.value }}"
+  with_dict: "{{ cloud_resource_definitions }}"
+  loop_control:
+    loop_var: cloud_provider
+
+- name: Look up facts about cloud provider resources.
+  include: facts.yml
+  vars:
+    cloud_provider_name: "{{ cloud_provider.key }}"
+    cloud_fact_definitions: "{{ cloud_provider.value }}"
+  with_dict: "{{ cloud_definitions.fact }}"
+  loop_control:
+    loop_var: cloud_provider
+
+### At this point, 'cloud_facts' has been fully populated with every available
+### fact, keyed by human name, like:
+###
+###    "cloud_facts": {
+###        "amazon": {
+###            "vpcs": {
+###                "first_vpc": {
+###                    "cidr_block": "10.1.0.0/16",
+###                    "classic_link_enabled": null,
+###                    ...
+###                    "tags": {
+###                        "Name": "first_vpc"
+###                    }
+###                },
+###                "another_vpc": {
+###                    ...
+###                    "tags": {
+###                        "Name": "another_vpc"
+###                    }
+###                }
+###            }
+###        }
+###    }
+

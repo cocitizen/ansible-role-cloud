@@ -1,0 +1,20 @@
+---
+
+- name: "Lookup {{ cloud_provider_name }} facts."
+  local_action: "{{ item.value.module }}"
+  args: "{{ item.value.options }}"
+  with_dict: "{{ cloud_fact_definitions }}"
+  loop_control:
+    label: "{{ item.key }}"
+  register: cloud_fact_lookup_result
+
+- name: "Key {{ cloud_provider_name }} facts by human names."
+  include: "key_types/{{ cloud_definitions.fact[cloud_provider_name][cloud_fact_lookup.item.key].name_key.type }}.yml"
+  vars:
+    cloud_fact_type: "{{ cloud_fact_lookup.item.key }}"
+    cloud_lookup_facts: "{{ cloud_fact_lookup[cloud_fact_lookup.item.key] }}"
+    cloud_fact_key_arg: "{{ cloud_definitions.fact[cloud_provider_name][cloud_fact_lookup.item.key].name_key.arg }}"
+  with_items: "{{ cloud_fact_lookup_result.results }}"
+  loop_control:
+    loop_var: cloud_fact_lookup
+

@@ -1,0 +1,30 @@
+---
+
+# Defaults are applied before all fact definitions (see `vars/main.yml`) for a
+# given cloud provider.
+cloud_fact_definition_defaults:
+  amazon:
+    options:
+      region: 'us-east-1'
+    name_key:
+      type: tag
+      arg: Name
+
+# Fact overrides take precedence over both fact defaults and definitions.
+#
+# cloud_fact_definition_overrides:
+#   amazon:
+#     vpcs:
+#       options:
+#         region: 'us-east-2'
+cloud_fact_definition_overrides: {}
+
+# Resource defaults operate just like fact defaults (see above).
+cloud_resource_definition_defaults:
+  amazon:
+    options:
+      region: 'us-east-1'
+
+# Resource overrides operate just like fact overrides (see above).
+cloud_resource_definition_overrides: {}
+
