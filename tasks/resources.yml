@@ -1,0 +1,30 @@
+---
+
+- name: "Merge defaults into {{ cloud_provider_name }} resources."
+  include: resource_types.yml
+  vars:
+    cloud_resource_type: "{{ cloud_resource_types.key }}"
+    cloud_resource_items: "{{ cloud_resource_types.value }}"
+  with_dict: "{{ cloud_resources[cloud_provider_name] }}"
+  loop_control:
+    loop_var: cloud_resource_types
+  when: cloud_resource_types.key in cloud_definitions['resource'][cloud_provider_name]
+
+
+- name: "Provision {{ cloud_provider_name }} resources."
+  include: provision_resources.yml
+  vars:
+    cloud_resource_type: "{{ cloud_resource_types.key }}"
+    cloud_resource_items: "{{ cloud_resources_to_provision[cloud_provider_name][cloud_resource_types.key] }}"
+  # We loop over the resource definitions here to ensure they are provisioned
+  # in the proper order.
+  with_dict: "{{ cloud_resource_definitions }}"
+  loop_control:
+    loop_var: cloud_resource_types
+  when: cloud_resource_types.key in cloud_resources[cloud_provider_name]
+
+# Need to add the cloud variable
+
+# Update cloud_facts with changes
+
+

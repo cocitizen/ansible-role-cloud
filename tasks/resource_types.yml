@@ -1,0 +1,15 @@
+---
+
+- name: "Merge defaults into {{ cloud_provider_name }} {{ cloud_resource_type }} resources."
+  set_fact:
+    cloud_resources_to_provision: "{{ cloud_resources_to_provision | default({}) | combine( { cloud_provider_name: { cloud_resource_type: { item.key: cloud_resource_definitions[cloud_resource_type] } } }, recursive=true ) | combine( { cloud_provider_name: { cloud_resource_type: { item.key: { 'options': cloud_resources[cloud_provider_name][cloud_resource_type][item.key] } } } }, recursive=true ) }}"
+  with_dict: "{{ cloud_resource_items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: "Set human names for {{ cloud_provider_name }} {{ cloud_resource_type }} resources."
+  include: "name_types/{{ cloud_definitions.resource[cloud_provider_name][cloud_resource_type].name_key.type }}.yml"
+  vars:
+    cloud_resource_name_type: "{{ cloud_definitions.resource[cloud_provider_name][cloud_resource_type].name_key.type }}"
+    cloud_resource_name_arg: "{{ cloud_definitions.resource[cloud_provider_name][cloud_resource_type].name_key.arg }}"
+

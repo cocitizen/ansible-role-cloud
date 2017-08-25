@@ -1,0 +1,9 @@
+---
+
+- name: "Set human names for {{ cloud_provider_name }} {{ cloud_fact_type }} by {{ cloud_fact_key_arg }} property."
+  set_fact:
+    cloud_facts: "{{ cloud_facts | default({}) | combine( { cloud_provider_name: { cloud_fact_type: { item[cloud_fact_key_arg]: item } } }, recursive=True ) }}"
+  with_items: "{{ cloud_fact_lookup.ansible_facts[cloud_fact_type] }}"
+  loop_control:
+    label: "{{ item[cloud_fact_key_arg] }}"
+

@@ -1,0 +1,17 @@
+---
+
+- debug: var=cloud_resource_items
+
+- name: "Provision {{ cloud_provider_name }} {{ cloud_resource_type }} resources."
+  local_action: "{{ item.value.module }}"
+  args: "{{ item.value.options }}"
+  with_dict: "{{ cloud_resource_items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  register: cloud_resource_provision_result
+
+# Need to add the cloud variable
+
+# Update cloud_facts with changes
+
+

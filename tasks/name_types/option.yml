@@ -1,0 +1,9 @@
+---
+
+- name: "Set '{{cloud_resource_name_arg}}' {{ cloud_resource_name_type }} for {{ cloud_provider_name }} {{ cloud_resource_type }} resources."
+  set_fact:
+    cloud_resources_to_provision: "{{ cloud_resources_to_provision | combine( { cloud_provider_name: { cloud_resource_type: { item.key: { 'options': { cloud_resource_name_arg: item.key } } } } }, recursive=true ) }}"
+  with_dict: "{{ cloud_resource_items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
