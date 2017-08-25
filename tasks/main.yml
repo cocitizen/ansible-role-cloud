@@ -12,18 +12,6 @@
   loop_control:
     loop_var: cloud_provider
 
-- name: Apply defaults and overrides to cloud resource definitions
-  include: definitions.yml
-  vars:
-    cloud_definition_type: resource
-    cloud_definition_defaults: "{{ cloud_resource_definition_defaults }}"
-    cloud_definition_overrides: "{{ cloud_resource_definition_overrides }}"
-    cloud_provider_name: "{{ cloud_provider.key }}"
-    cloud_provider_definitions: "{{ cloud_provider.value }}"
-  with_dict: "{{ cloud_resource_definitions }}"
-  loop_control:
-    loop_var: cloud_provider
-
 - name: Look up facts about cloud provider resources.
   include: facts.yml
   vars:
@@ -33,6 +21,7 @@
   loop_control:
     loop_var: cloud_provider
 
+- debug: var=cloud_facts
 ### At this point, 'cloud_facts' has been fully populated with every available
 ### fact, keyed by human name, like:
 ###
@@ -56,4 +45,28 @@
 ###            }
 ###        }
 ###    }
+
+- name: Apply defaults and overrides to cloud resource definitions.
+  include: definitions.yml
+  vars:
+    cloud_definition_type: resource
+    cloud_definition_defaults: "{{ cloud_resource_definition_defaults }}"
+    cloud_definition_overrides: "{{ cloud_resource_definition_overrides }}"
+    cloud_provider_name: "{{ cloud_provider.key }}"
+    cloud_provider_definitions: "{{ cloud_provider.value }}"
+  with_dict: "{{ cloud_resource_definitions }}"
+  loop_control:
+    loop_var: cloud_provider
+  when: cloud_provision_resources
+
+- name: Provision cloud resources.
+  include: resources.yml
+  vars:
+    cloud_provider_name: "{{ cloud_provider.key }}"
+    cloud_resource_definitions: "{{ cloud_definitions['resource'][cloud_provider.key] }}"
+  with_dict: "{{ cloud_resources }}"
+  loop_control:
+    loop_var: cloud_provider
+  when: cloud_provision_resources
+
 

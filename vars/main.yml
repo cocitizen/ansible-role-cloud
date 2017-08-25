@@ -2,6 +2,11 @@
 
 cloud_fact_definitions:
   amazon:
+    efs:
+      module: efs_facts
+      name_key:
+        type: ansible_facts
+        arg: creation_token
     instances:
       module: ec2_remote_facts
     internet_gateways:
@@ -31,5 +36,28 @@ cloud_fact_definitions:
 cloud_resource_definitions:
   amazon:
     vpcs:
-      module: 'ec2_vpc_net'
+      module: ec2_vpc_net
+      name_key:
+        type: option
+        arg: name
+    rds_subnet_groups:
+      module: rds_subnet_group
+      name_key:
+        type: option
+        arg: name
+    rds_instances:
+      module: rds
+      name_key:
+        type: option
+        arg: instance_name
+    efs:
+      module: efs
+      name_key:
+        type: option
+        arg: name
+    instances:
+      module: ec2
+      name_key:
+        type: instance_tags
+        arg: Name
 

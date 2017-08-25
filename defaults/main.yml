@@ -1,7 +1,8 @@
 ---
 
 # Defaults are applied before all fact definitions (see `vars/main.yml`) for a
-# given cloud provider.
+# given cloud provider. This allows for injecting certain "global" defaults
+# (per provider) that will apply to all resources.
 cloud_fact_definition_defaults:
   amazon:
     options:
@@ -10,14 +11,34 @@ cloud_fact_definition_defaults:
       type: tag
       arg: Name
 
-# Fact overrides take precedence over both fact defaults and definitions.
+# TODO: implement this:
+#cloud_fact_option_defaults:
+#  amazon:
+#    region: 'us-east-1'
+
+# Fact overrides take precedence over both fact defaults and definitions. This
+# mechanism allows altering the basic functionality of this role. For example,
+# the following would result in a custom module being called to gather facts
+# about AWS VPCs:
 #
 # cloud_fact_definition_overrides:
 #   amazon:
 #     vpcs:
-#       options:
-#         region: 'us-east-2'
-cloud_fact_definition_overrides: {}
+#       module: custom_aws_vpc_facts
+cloud_fact_definition_overrides:
+  amazon:
+    instances:
+      options:
+        filters:
+          instance-state-name: running
+
+# Whether to provision cloud resources. Set to 'False' to just gather cloud
+# facts.
+cloud_provision_resources: True
+
+# This is the main dictionary describing the cloud infrastructure to build and
+# manage.
+cloud_resources: {}
 
 # Resource defaults operate just like fact defaults (see above).
 cloud_resource_definition_defaults:
@@ -25,6 +46,25 @@ cloud_resource_definition_defaults:
     options:
       region: 'us-east-1'
 
-# Resource overrides operate just like fact overrides (see above).
+# Resource definition overrides operate just like fact overrides (see above).
 cloud_resource_definition_overrides: {}
 
+# TODO: implement this:
+#cloud_resource_option_defaults:
+#  amazon:
+#    region: 'us-east-1'
+cloud_resource_option_defaults: {}
+
+# Resource option overrides apply during provisioning, and will override
+# options specified in the 'cloud_resources' dictionary. This is a way to
+# enforce specific options across all instances of a particular resource type
+# (i.e. module). For example, if organizational policy dictated the use of a
+# specific AMI when provisioning EC2 instances, this could be accomplished
+# with:
+#
+# TODO: implement this:
+#cloud_resource_option_overrides:
+#  amazon:
+#    instances:
+#      image: ami-a1b2c3d4
+cloud_resource_option_overrides: {}
