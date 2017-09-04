@@ -60,4 +60,4 @@ cloud_resource_definitions:
       name_key:
         type: instance_tags
         arg: Name
-
+      resource_handler: ec2

@@ -1,0 +1,22 @@
+---
+
+- name: "Merge defaults into existing {{ cloud_provider_name }} {{ cloud_resource_type }} resources."
+  set_fact:
+    cloud_resources_to_provision: "{{ cloud_resources_to_provision | default({}) | combine( { cloud_provider_name: { cloud_resource_type: { item.key: cloud_resource_definitions[cloud_resource_type] } } }, recursive=true ) | combine( { cloud_provider_name: { cloud_resource_type: { item.key: { 'options': cloud_resources[cloud_provider_name][cloud_resource_type][item.key] | combine({ 'instance_ids': [ cloud_facts.amazon.instances[item.key].id ] }, recursive=true) } } } }, recursive=true ) }}"
+  with_dict: "{{ cloud_resource_items }}"
+  when: item.value.state != 'present' and ( cloud_facts.amazon.instances is defined and cloud_facts.amazon.instances[item.key] is defined )
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: "Merge defaults into new {{ cloud_provider_name }} {{ cloud_resource_type }} resources."
+  set_fact:
+    # We set state to 'present', since this is a new instance. Other states,
+    # like 'running', may attempt to act on a terminated instance, leading to
+    # errors.
+    cloud_resources_to_provision: "{{ cloud_resources_to_provision | default({}) | combine( { cloud_provider_name: { cloud_resource_type: { item.key: cloud_resource_definitions[cloud_resource_type] } } }, recursive=true ) | combine( { cloud_provider_name: { cloud_resource_type: { item.key: { 'options': cloud_resources[cloud_provider_name][cloud_resource_type][item.key] } } } }, recursive=true ) | combine( { cloud_provider_name: { cloud_resource_type: { item.key: { 'options': { 'state': 'present' } } } } }, recursive=true) }}"
+  with_dict: "{{ cloud_resource_items }}"
+  when: item.value.state != 'absent' and ( cloud_facts.amazon.instances is not defined or cloud_facts.amazon.instances[item.key] is not defined )
+  loop_control:
+    label: "{{ item.key }}"
+
+

@@ -21,7 +21,6 @@
   loop_control:
     loop_var: cloud_provider
 
-- debug: var=cloud_facts
 ### At this point, 'cloud_facts' has been fully populated with every available
 ### fact, keyed by human name, like:
 ###
