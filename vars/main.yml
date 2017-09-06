@@ -7,6 +7,11 @@ cloud_fact_definitions:
       name_key:
         type: ansible_facts
         arg: creation_token
+    elbs:
+      module: ec2_elb_facts
+      name_key:
+        type: property
+        arg: name
     instances:
       module: ec2_remote_facts
     internet_gateways:
@@ -40,6 +45,11 @@ cloud_resource_definitions:
       name_key:
         type: option
         arg: name
+    security_groups:
+      module: ec2_group
+      name_key:
+        type: option
+        arg: name
     rds_subnet_groups:
       module: rds_subnet_group
       name_key:
@@ -61,3 +71,8 @@ cloud_resource_definitions:
         type: instance_tags
         arg: Name
       resource_handler: ec2
+    elbs:
+      module: ec2_elb_lb
+      name_key:
+        type: option
+        arg: name
