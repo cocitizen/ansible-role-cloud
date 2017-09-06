@@ -25,12 +25,19 @@ cloud_fact_definition_defaults:
 #   amazon:
 #     vpcs:
 #       module: custom_aws_vpc_facts
+#
+# *NOTE* Be exceedingly careful in overriding fact definitions. Such changes
+# can severely break the functioning of this module.
 cloud_fact_definition_overrides:
   amazon:
     instances:
       options:
         filters:
-          instance-state-name: running
+          instance-state-name:
+            - pending
+            - running
+            - stopped
+            - stopping
 
 # Whether to provision cloud resources. Set to 'False' to just gather cloud
 # facts.
