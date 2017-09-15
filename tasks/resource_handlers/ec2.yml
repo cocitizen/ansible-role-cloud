@@ -19,4 +19,32 @@
   loop_control:
     label: "{{ item.key }}"
 
+- name: Find user's public key to allow root SSH login.
+  set_fact:
+    my_ssh_pub_key: "{{ lookup('file', item) }}"
+  with_first_found:
+    - files:
+      - '~/.ssh/id_rsa.pub'
+      skip: true
+  register: found_my_pub_key
+
+- name: Notify if public key cannot be found.
+  fail:
+    msg: Could not find a public key at '~/.ssh/id_rsa.pub'. Please generate one by running 'ssh-keygen'.
+  when: found_my_pub_key.skipped is defined
+
+- name: Compile list of regions in which to launch EC2 instances.
+  set_fact:
+    deploy_key_ec2_regions: "{{ deploy_key_ec2_regions | default([]) | union([ item.value.options.region ]) }}"
+  with_dict: "{{ cloud_resources_to_provision[cloud_provider_name][cloud_resource_type] }}"
+
+- name: Ensure that an EC2 deployment key is defined for the current user.
+  ec2_key:
+    name: "{{ lookup('env','USER') }}" # the current user
+    key_material: "{{ my_ssh_pub_key }}"
+    region: "{{ item }}"
+    state: present
+    wait: yes
+  connection: local
+  with_items: "{{ deploy_key_ec2_regions }}"
 
