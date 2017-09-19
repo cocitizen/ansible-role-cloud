@@ -38,41 +38,51 @@ cloud_fact_definitions:
     vpcs:
       module: ec2_vpc_net_facts
 
+# While these are defined here alphabetically, they will be provisioned based
+# on the 'weight' attribute. See: tasks/resources.yml
 cloud_resource_definitions:
   amazon:
-    vpcs:
-      module: ec2_vpc_net
-      name_key:
-        type: option
-        arg: name
-    security_groups:
-      module: ec2_group
-      name_key:
-        type: option
-        arg: name
-    rds_subnet_groups:
-      module: rds_subnet_group
-      name_key:
-        type: option
-        arg: name
-    rds_instances:
-      module: rds
-      name_key:
-        type: option
-        arg: instance_name
     efs:
       module: efs
+      weight: 5
+      name_key:
+        type: option
+        arg: name
+    elbs:
+      module: ec2_elb_lb
+      weight: 7
       name_key:
         type: option
         arg: name
     instances:
       module: ec2
+      weight: 6
       name_key:
         type: instance_tags
         arg: Name
       resource_handler: ec2
-    elbs:
-      module: ec2_elb_lb
+    rds_instances:
+      module: rds
+      weight: 4
+      name_key:
+        type: option
+        arg: instance_name
+    rds_subnet_groups:
+      module: rds_subnet_group
+      weight: 3
       name_key:
         type: option
         arg: name
+    security_groups:
+      module: ec2_group
+      weight: 2
+      name_key:
+        type: option
+        arg: name
+    vpcs:
+      module: ec2_vpc_net
+      weight: 1
+      name_key:
+        type: option
+        arg: name
+

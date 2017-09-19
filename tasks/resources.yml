@@ -13,14 +13,17 @@
 - name: "Provision {{ cloud_provider_name }} resources."
   include: provision_resources.yml
   vars:
-    cloud_resource_type: "{{ cloud_resource_types.key }}"
-    cloud_resource_items: "{{ cloud_resources_to_provision[cloud_provider_name][cloud_resource_types.key] }}"
-  # We loop over the resource *definitions* here to ensure they are provisioned
-  # in the proper order.
-  with_dict: "{{ cloud_resource_definitions }}"
+    cloud_resource_type: "{{ cloud_resource_types }}"
+    cloud_resource_items: "{{ cloud_resources_to_provision[cloud_provider_name][cloud_resource_types] }}"
+  # We loop over the resource *definitions* here, sorted by weight, to ensure
+  # they are provisioned in the proper order.
+  with_items: "{{ cloud_resource_definitions.items()|sort(attribute='1.weight') }}"
   loop_control:
     loop_var: cloud_resource_types
-  when: cloud_resource_types.key in cloud_resources[cloud_provider_name] and cloud_resources_to_provision is defined
+  # Sorting by weight results in a list alternating resource type keys and
+  # their definitions, which are dicts. Here we filter out the latter ("not
+  # mapping"), since we only need the resource definition keys, at this point.
+  when: cloud_resource_types is not mapping and cloud_resource_types in cloud_resources[cloud_provider_name] and cloud_resources_to_provision is defined
 
 # @TODO: Update cloud_facts with changes
 
