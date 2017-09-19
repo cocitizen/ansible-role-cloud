@@ -1,9 +1,18 @@
 ---
 
+- name: "Check that {{ cloud_fact_key_arg }} tags are set on {{ cloud_provider_name }} {{ cloud_fact_type }}."
+  fail:
+    msg: "One or more {{ cloud_provider_name }} {{ cloud_fact_type }} does not have a {{ cloud_fact_key_arg }} tag set. Check {{ item.id }}"
+  with_items: "{{ cloud_lookup_facts }}"
+  loop_control:
+    label: "{{ item.id }}"
+  when: item.tags[cloud_fact_key_arg] is not defined
+
 - name: "Set human names for {{ cloud_provider_name }} {{ cloud_fact_type }} by {{ cloud_fact_key_arg }} tag."
   set_fact:
     cloud_facts: "{{ cloud_facts | default({}) | combine( { cloud_provider_name: { cloud_fact_type: { item.tags[cloud_fact_key_arg]: item } } }, recursive=True ) }}"
   with_items: "{{ cloud_lookup_facts }}"
   loop_control:
     label: "{{ item.tags[cloud_fact_key_arg] }}"
+  when: cloud_fact_key_arg in item.tags
 
