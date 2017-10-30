@@ -58,6 +58,8 @@
     loop_var: cloud_provider
   when: cloud_provision_resources
 
+- debug: var=cloud_resources
+
 - name: Provision cloud resources.
   include: resources.yml
   vars:

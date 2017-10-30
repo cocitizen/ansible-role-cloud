@@ -44,41 +44,47 @@ cloud_resource_definitions:
   amazon:
     efs:
       module: efs
-      weight: 5
+      weight: 6
       name_key:
         type: option
         arg: name
     elbs:
       module: ec2_elb_lb
-      weight: 7
+      weight: 8
       name_key:
         type: option
         arg: name
     instances:
       module: ec2
-      weight: 6
+      weight: 7
       name_key:
         type: instance_tags
         arg: Name
       resource_handler: ec2
     rds_instances:
       module: rds
-      weight: 4
+      weight: 5
       name_key:
         type: option
         arg: instance_name
     rds_subnet_groups:
       module: rds_subnet_group
-      weight: 3
+      weight: 4
       name_key:
         type: option
         arg: name
     security_groups:
       module: ec2_group
-      weight: 2
+      weight: 3
       name_key:
         type: option
         arg: name
+    vpc_subnets:
+      module: ec2_vpc_subnet
+      weight: 2
+      name_key:
+        type: tags
+        arg: Name
     vpcs:
       module: ec2_vpc_net
       weight: 1
